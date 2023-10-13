@@ -48,6 +48,11 @@ async def on_message(message):
         elif user_message.lower() == "!joke":
             await message.channel.send(f"{getJoke()}")
             return
+        elif user_message.lower() == "!debug":
+            await message.channel.send(
+                f"Hi {username}. Please walk me through the code you are working on."
+            )
+            return
 
 
 client.run(TOKEN)
