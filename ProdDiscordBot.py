@@ -50,7 +50,12 @@ async def on_message(message):
             return
         elif user_message.lower() == "!debug":
             await message.channel.send(
-                f"Hi {username}. Please walk me through the code you are working on."
+                f"Hi {username}. Please walk me through the code you are working on, step by step using the !step command."
+            )
+            return
+        elif user_message.startswith("!step"):
+            await message.channel.send(
+                f"Interesting {username}, what is the next step?"
             )
             return
 
