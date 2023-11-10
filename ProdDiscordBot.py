@@ -10,7 +10,7 @@ jokes = [
 ]
 
 # token for the discord bot
-TOKEN = "MTE2MjQ0Mzc5NjcxODU3MTY1MA.GwS6co._dHmqfccTiVn4CEsuqRA9UEGZnGG1ievWGN044"
+TOKEN = "MTE2MjQ0Mzc5NjcxODU3MTY1MA.GxGlQx.gKPnz_P05UlyZRYCV7eTdDdO6QGfPEJCP7GTFI"
 
 intents = discord.Intents.default()
 intents.message_content = True
