@@ -1,7 +1,10 @@
 import discord
 import random
+import time
+from time import gmtime, strftime
+from discord.ext import commands, tasks
+import asyncio
 
-# api request for today's WC schedule
 jokes = [
     "Why do Java programmers have to wear glasses? Because they don’t C#.",
     "Why did the programmer quit his job?\n\n Because he didn’t get arrays.",
@@ -14,50 +17,70 @@ TOKEN = "MTE2MjQ0Mzc5NjcxODU3MTY1MA.GxGlQx.gKPnz_P05UlyZRYCV7eTdDdO6QGfPEJCP7GTF
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
+ctxBackground = None
 
 
-@client.event
+@bot.event
 async def on_ready():
-    print("We have logged in as {0.user}".format(client))
+    print("We have logged in as {0.user}".format(bot))
 
 
-# returns string of home and away teams
 def getJoke():
     return random.choice(jokes)
 
 
-# controlling bot messages based on user message.
-
-
-@client.event
-async def on_message(message):
-    username = str(message.author).split("#")[0]
-    user_message = str(message.content)
-    channel = str(message.channel.name)
-    print(f"{username}: {user_message} ({channel})")
-
-    # ignores the bot's messages
-    if message.author == client.user:
-        return
-
-    if message.channel.name == "general":
-        if user_message.lower() == "hey":
-            await message.channel.send(f"Hello {username}!")
-            return
-        elif user_message.lower() == "!joke":
-            await message.channel.send(f"{getJoke()}")
-            return
-        elif user_message.lower() == "!debug":
-            await message.channel.send(
-                f"Hi {username}. Please walk me through the code you are working on, step by step using the !step command."
+@tasks.loop(seconds=1500)
+async def work_timer():
+    # This function will be called every TIMER_INTERVAL seconds
+    if work_timer.current_loop >= 4:
+        print("work stopping")
+        work_timer.stop()
+    if work_timer.current_loop > 0:
+        global ctxBackground
+        if ctxBackground:
+            print("one loop of work " + strftime("%H:%M:%S", gmtime()))
+            await ctxBackground.send(
+                "Background timer: 25 minutes have passed. Break time!"
             )
-            return
-        elif user_message.startswith("!step"):
-            await message.channel.send(
-                f"Interesting {username}, what is the next step?"
-            )
-            return
+        if not break_timer.is_running():
+            print("break starting " + strftime("%H:%M:%S", gmtime()))
+            break_timer.start()
 
 
-client.run(TOKEN)
+@tasks.loop(seconds=300)
+async def break_timer():
+    # This function will be called every TIMER_INTERVAL seconds
+    # stops after one loop
+    global ctxBackground
+    if ctxBackground and break_timer.current_loop == 1:
+        await ctxBackground.send(
+            "Background timer: 5 minutes have passed. Back to work."
+        )
+        print("break stopping " + strftime("%H:%M:%S", gmtime()))
+        break_timer.stop()
+
+
+# Add your commands here
+@bot.command()
+async def joke(ctx):
+    await ctx.send(f"{getJoke()}")
+
+
+@bot.command()
+async def debug(ctx):
+    await ctx.send(
+        f"Hi {ctx.author}. Please walk me through the code you are working on, step by step using the !step command."
+    )
+
+
+@bot.command()
+async def timer(ctx):
+    await ctx.send("Okay, starting the ProductivityTimer!")
+    global ctxBackground
+    ctxBackground = ctx
+
+    work_timer.start()
+
+
+bot.run(TOKEN)
