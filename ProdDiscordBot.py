@@ -12,8 +12,8 @@ jokes = [
     "3 Errors walk into a bar. The barman says, “Normally I’d Throw you all out, but tonight I’ll make an Exception.”",
 ]
 
-# token for the discord bot
-TOKEN = "MTE2MjQ0Mzc5NjcxODU3MTY1MA.GxGlQx.gKPnz_P05UlyZRYCV7eTdDdO6QGfPEJCP7GTFI"
+# token for the discord bot, can't make it public or bot won't work. If you want to try it, get a discord bot token from discord dev tools.
+TOKEN = ""
 
 intents = discord.Intents.default()
 intents.message_content = True
